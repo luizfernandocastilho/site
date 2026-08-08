@@ -1,0 +1,9 @@
+{
+  "title": "TÍTULO DO LIVRO (pré-lançamento)",
+  "author": "Luiz Fernando Castilho",
+  "description_pt": "PLACEHOLDER: descrição do livro em português. Deixe seu e-mail para receber o material (capítulo de amostra / prévia) e ser avisado no lançamento.",
+  "description_en": "PLACEHOLDER: book description in English. Leave your email to get the material (sample chapter / preview) and be notified at launch.",
+  "cover": "livros/capa-prelancamento.webp",
+  "fileId": "prelancamento",
+  "order": 0
+}
