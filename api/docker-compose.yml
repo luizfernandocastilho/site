@@ -30,6 +30,9 @@ services:
       SMTP_USER: ${SMTP_USER:-}
       SMTP_PASS: ${SMTP_PASS:-}
       SMTP_FROM: ${SMTP_FROM:-Luiz Castilho <no-reply@luizcastilho.com>}
+      # Umami (opcional): evento server-side `download-complete`. Vazio = desligado.
+      UMAMI_HOST: ${UMAMI_HOST:-}
+      UMAMI_WEBSITE_ID: ${UMAMI_WEBSITE_ID:-}
       STORAGE_DIR: /app/storage
       # Conteúdo do site (fonte da verdade dos arquivos gated), lido pelo `npm run seed`.
       CONTENT_DIR: /app/site-content

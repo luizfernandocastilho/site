@@ -28,6 +28,11 @@ export const config = {
     pass: process.env.SMTP_PASS ?? '',
     from: process.env.SMTP_FROM ?? 'Luiz Castilho <no-reply@luizcastilho.com>',
   },
+  // Analytics Umami (opcional): evento server-side `download-complete`. Vazio = desligado.
+  umami: {
+    host: stripSlash(process.env.UMAMI_HOST ?? ''),
+    websiteId: process.env.UMAMI_WEBSITE_ID ?? '',
+  },
 };
 
 export type Config = typeof config;
