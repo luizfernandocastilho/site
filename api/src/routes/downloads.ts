@@ -13,6 +13,7 @@ import {
   normalizeLocale,
 } from '../validation.js';
 import { sendDownloadLink } from '../mailer.js';
+import { trackEvent } from '../umami.js';
 import { confirmationPage, errorPage } from '../views.js';
 
 interface FileRow {
@@ -24,6 +25,7 @@ interface FileRow {
 
 interface LeadRow {
   id: string;
+  file_id: string;
   filename: string;
   mime: string;
   title: string;
@@ -82,7 +84,7 @@ export async function downloadRoutes(app: FastifyInstance): Promise<void> {
   app.get<{ Params: { token: string } }>('/downloads/:token', async (request, reply) => {
     const tokenHash = hashToken(request.params.token);
     const { rows } = await query<LeadRow>(
-      `SELECT l.id, l.token_expires_at, l.downloaded_at, f.filename, f.mime, f.title
+      `SELECT l.id, l.file_id, l.token_expires_at, l.downloaded_at, f.filename, f.mime, f.title
          FROM download_leads l
          JOIN files f ON f.id = l.file_id
         WHERE l.token_hash = $1`,
@@ -108,6 +110,8 @@ export async function downloadRoutes(app: FastifyInstance): Promise<void> {
 
     if (!lead.downloaded_at) {
       await query('UPDATE download_leads SET downloaded_at = now() WHERE id = $1', [lead.id]);
+      // Fecha o funil: evento server-side de conclusão (fire-and-forget; no-op sem Umami).
+      trackEvent('download-complete', { file: lead.file_id });
     }
     reply.header('Content-Type', lead.mime);
     reply.header('Content-Disposition', `attachment; filename="${lead.filename}"`);
