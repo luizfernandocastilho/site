@@ -30,12 +30,15 @@ export function trackEvent(name: string, data?: Record<string, unknown>): void {
       ...(data ? { data } : {}),
     },
   };
-  // O Umami exige User-Agent; requisição server-side usa um estático.
+  // O Umami DESCARTA eventos cujo User-Agent parece "bot" (checagem isbot) — devolve
+  // `{"beep":"boop"}` e ignora. Por isso usamos um UA de navegador aqui, para o evento
+  // server-side ser efetivamente registrado.
   fetch(`${host}/api/send`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'User-Agent': 'site-download-api/1.0 (+server-side event)',
+      'User-Agent':
+        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
     },
     body: JSON.stringify(body),
   }).catch((err: unknown) => {
