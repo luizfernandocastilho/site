@@ -1,0 +1,14 @@
+# Override OPCIONAL para acessar o banco por um cliente SQL (ex.: DBeaver).
+#
+# Publica a porta do Postgres SOMENTE no loopback (127.0.0.1) da máquina onde o
+# compose roda (a NAS) — o banco NÃO fica exposto na LAN/internet. Conecte por um
+# túnel SSH (ou pela tailnet) até a NAS. Ver api/README.md → "Acessar os leads".
+#
+# ATENÇÃO: `docker-compose.override.yml` é carregado AUTOMATICAMENTE por todo
+# `docker compose`. Se rodar o api localmente e já tiver um Postgres na 5432 (conflito),
+# renomeie este arquivo (ex.: docker-compose.dbeaver.yml) e use-o só sob demanda:
+#   docker compose -f docker-compose.yml -f docker-compose.dbeaver.yml up -d
+services:
+  postgres:
+    ports:
+      - '127.0.0.1:5432:5432'

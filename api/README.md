@@ -36,6 +36,32 @@ curl localhost:3000/health  # {"status":"ok"}
 - `download_leads` — `file_id`, `file_title`, `name`, `email`, `requested_at`,
   `token_hash` (nunca o token bruto), `token_expires_at`, `downloaded_at`, `consent_at`.
 
+## Acessar os leads (dados dos formulários)
+Os formulários preenchidos ficam na tabela **`download_leads`** (Postgres; não há arquivo
+avulso — o banco persiste no volume `pgdata`). Duas formas de acesso:
+
+**1. Export CSV (rápido)** — endpoint admin protegido por `ADMIN_TOKEN`:
+```bash
+curl -H "Authorization: Bearer $ADMIN_TOKEN" localhost:3000/admin/leads.csv -o leads.csv
+```
+
+**2. Cliente SQL (ex.: DBeaver)** — o serviço `postgres` **não publica porta** por padrão
+(fica só na rede Docker). Use o override versionado **`docker-compose.override.yml`**, que
+publica a 5432 **só no loopback** (`127.0.0.1`) da NAS:
+```bash
+docker compose up -d   # o override é aplicado automaticamente → 127.0.0.1:5432 na NAS
+```
+No DBeaver, crie uma conexão **PostgreSQL** com **túnel SSH**:
+- **Main:** Host `127.0.0.1` · Port `5432` · Database `site_downloads` · Username `site` ·
+  Password = `POSTGRES_PASSWORD` do `.env`.
+- **SSH (Use SSH Tunnel):** Host = IP/hostname (Tailscale) da NAS · Port `22` · seu usuário
+  (senha ou chave).
+
+> A 5432 fica amarrada a `127.0.0.1` — acessível só de dentro da NAS (via o túnel SSH),
+> nunca exposta na LAN/internet. **Não** use `- '5432:5432'` (bind `0.0.0.0`) com dados
+> pessoais de leads (LGPD). Se rodar o api localmente e já tiver um Postgres na 5432,
+> renomeie o override para `docker-compose.dbeaver.yml` e use-o sob demanda com `-f`.
+
 ## Adicionar um arquivo para download (gated)
 O registro é **derivado do conteúdo do site** (sem lista hardcoded). Fluxo:
 
