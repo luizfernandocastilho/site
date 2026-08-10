@@ -1,8 +1,0 @@
-{
-  "title": "O voto da sua cidade prevê o Brasil?",
-  "description_pt": "Análise de dados eleitorais: 30 anos de urnas em 5.568 municípios (TSE, 1994–2024), com regressão de painel, para testar o quanto o voto local prevê (e esconde) a política nacional.",
-  "description_en": "Electoral-behavior data analysis: 30 years of ballots across 5,568 municipalities (TSE, 1994–2024), using panel regression to test how much the local vote predicts (and hides) national politics.",
-  "fileId": "o-voto-da-sua-cidade-preve-o-brasil",
-  "cover": "relatorios/capa-o-voto-da-sua-cidade-preve-o-brasil.webp",
-  "order": 4
-}
