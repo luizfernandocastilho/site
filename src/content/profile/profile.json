@@ -1,6 +1,6 @@
 {
   "name": "Luiz Fernando Castilho",
-  "headline_pt": "Transformo ideias em resultados concretos.",
+  "headline_pt": "Transformo ideias em resultados.",
   "headline_en": "I turn ideas into concrete results.",
   "bio_pt": [
     "Atuo na interseção entre estratégia, governança e execução, ajudando organizações a saírem do planejamento no papel para a entrega que gera valor real. Ao longo da minha trajetória, conduzi projetos de grande porte e alta complexidade, do planejamento estratégico à gestão de programas e portfólios, sempre orientado por dados e com foco em resultados mensuráveis e sustentáveis ao longo do tempo. Acredito que boa decisão nasce de boa informação: por isso, transformo dados dispersos em evidências claras que sustentam escolhas mais seguras e defensáveis.",
@@ -23,12 +23,6 @@
       "url": "https://www.linkedin.com/in/luizfernandocastilho/",
       "icon": "linkedin"
     },
-    {
-      "label": "Bluesky",
-      "url": "https://bsky.app/profile/luizcastilho.bsky.social",
-      "icon": "bluesky"
-    },
-    { "label": "X", "url": "https://x.com/luizfcastilho", "icon": "x" },
     { "label": "ORCID", "url": "https://orcid.org/0000-0003-0879-8259", "icon": "orcid" }
   ],
   "photo": "images/castilho.webp",
