@@ -1,0 +1,42 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Relatorios from './Relatorios.astro';
+import { getUi, getProfile, getRelatorios } from '../lib/content';
+import { NAV_ITEMS, NAV_CHILDREN, navChildUrl } from '../lib/nav';
+import { t, otherLocale, type Locale } from '../lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const { strings, fallback } = await getUi(locale);
+const profile = await getProfile();
+const relatorios = await getRelatorios();
+
+const section = t(strings, 'navRecursoAnalises', fallback);
+const title = `${section} · ${profile?.name ?? 'Site Pessoal'}`;
+
+// Sub-página de Publicações → o toggle de idioma preserva a página de Análises e Relatórios.
+const parent = NAV_ITEMS.find((i) => i.key === 'publications')!;
+const child = NAV_CHILDREN['publications'].find((c) => c.key === 'analises')!;
+const counterpartHref = navChildUrl(parent, child, otherLocale(locale));
+---
+
+<BaseLayout
+  locale={locale}
+  title={title}
+  description={section}
+  strings={strings}
+  fallback={fallback}
+  navKey="publications"
+  counterpartHref={counterpartHref}
+>
+  <Relatorios
+    id="relatorios"
+    locale={locale}
+    items={relatorios}
+    strings={strings}
+    fallback={fallback}
+  />
+</BaseLayout>

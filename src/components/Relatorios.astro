@@ -15,103 +15,109 @@ interface Relatorio {
 }
 
 interface Props {
+  id: string;
   locale: Locale;
   items: Relatorio[];
   strings: Record<string, string>;
   fallback: Record<string, string>;
 }
 
-const { locale, items, strings, fallback } = Astro.props;
+const { id, locale, items, strings, fallback } = Astro.props;
 const base = import.meta.env.BASE_URL;
 ---
 
-<ul class="relatorio-grid">
-  {
-    items.map((r) => {
-      const description = locale === 'pt' ? r.description_pt : r.description_en;
-      const cover = r.cover
-        ? r.cover.startsWith('http')
-          ? r.cover
-          : withBase(r.cover, base)
-        : null;
-      const coverEl = (
-        <span class="relatorio-cover">
-          {cover ? (
-            <img
-              class="relatorio-cover-img"
-              src={cover}
-              alt={r.title}
-              loading="lazy"
-              width="300"
-              height="450"
-            />
-          ) : (
-            <span class="relatorio-slide">
-              <span class="relatorio-slide-title">{r.title}</span>
+<section class="section" id={id} aria-labelledby={`${id}-title`}>
+  <div class="container">
+    <h2 id={`${id}-title`}>{t(strings, 'navRecursoAnalises', fallback)}</h2>
+    <ul class="relatorio-grid">
+      {
+        items.map((r) => {
+          const description = locale === 'pt' ? r.description_pt : r.description_en;
+          const cover = r.cover
+            ? r.cover.startsWith('http')
+              ? r.cover
+              : withBase(r.cover, base)
+            : null;
+          const coverEl = (
+            <span class="relatorio-cover">
+              {cover ? (
+                <img
+                  class="relatorio-cover-img"
+                  src={cover}
+                  alt={r.title}
+                  loading="lazy"
+                  width="300"
+                  height="450"
+                />
+              ) : (
+                <span class="relatorio-slide">
+                  <span class="relatorio-slide-title">{r.title}</span>
+                </span>
+              )}
             </span>
-          )}
-        </span>
-      );
-      const bodyMeta = (
-        <>
-          <span class="relatorio-title">{r.title}</span>
-          {description && <span class="relatorio-desc">{description}</span>}
-        </>
-      );
+          );
+          const bodyMeta = (
+            <>
+              <span class="relatorio-title">{r.title}</span>
+              {description && <span class="relatorio-desc">{description}</span>}
+            </>
+          );
 
-      // Gated (tem fileId): card não é link; o CTA abre um <details> com o formulário
-      // de solicitação (nome/e-mail). Sem runtime JS (divulgação nativa).
-      if (r.fileId) {
-        return (
-          <li class="relatorio-card">
-            <div>
-              {coverEl}
-              <span class="relatorio-body">
-                {bodyMeta}
-                <details class="relatorio-gate">
-                  <summary
-                    class="relatorio-action"
-                    data-umami-event="download-request"
-                    data-umami-event-file={r.fileId}
-                  >
-                    {t(strings, 'articleDownload', fallback)} →
-                  </summary>
-                  <DownloadGate
-                    id={`gate-${r.fileId}`}
-                    fileId={r.fileId}
-                    locale={locale}
-                    strings={strings}
-                    fallback={fallback}
-                  />
-                </details>
-              </span>
-            </div>
-          </li>
-        );
+          // Gated (tem fileId): card não é link; o CTA abre um <details> com o formulário
+          // de solicitação (nome/e-mail). Sem runtime JS (divulgação nativa).
+          if (r.fileId) {
+            return (
+              <li class="relatorio-card">
+                <div>
+                  {coverEl}
+                  <span class="relatorio-body">
+                    {bodyMeta}
+                    <details class="relatorio-gate">
+                      <summary
+                        class="relatorio-action"
+                        data-umami-event="download-request"
+                        data-umami-event-file={r.fileId}
+                      >
+                        {t(strings, 'articleDownload', fallback)} →
+                      </summary>
+                      <DownloadGate
+                        id={`gate-${r.fileId}`}
+                        fileId={r.fileId}
+                        locale={locale}
+                        strings={strings}
+                        fallback={fallback}
+                      />
+                    </details>
+                  </span>
+                </div>
+              </li>
+            );
+          }
+
+          // Aberto (opt-out via pdf): download direto de PDF público.
+          return (
+            <li class="relatorio-card">
+              <a
+                href={withBase(r.pdf!, base)}
+                download
+                target="_blank"
+                rel="noopener noreferrer"
+                data-umami-event="download-pdf"
+                data-umami-event-file={r.pdf}
+              >
+                {coverEl}
+                <span class="relatorio-body">
+                  {bodyMeta}
+                  <span class="relatorio-action">{t(strings, 'articleDownload', fallback)} →</span>
+                </span>
+              </a>
+            </li>
+          );
+        })
       }
-
-      // Aberto (opt-out via pdf): download direto de PDF público.
-      return (
-        <li class="relatorio-card">
-          <a
-            href={withBase(r.pdf!, base)}
-            download
-            target="_blank"
-            rel="noopener noreferrer"
-            data-umami-event="download-pdf"
-            data-umami-event-file={r.pdf}
-          >
-            {coverEl}
-            <span class="relatorio-body">
-              {bodyMeta}
-              <span class="relatorio-action">{t(strings, 'articleDownload', fallback)} →</span>
-            </span>
-          </a>
-        </li>
-      );
-    })
-  }
-</ul>
+    </ul>
+  </div>
+</section>
 
 <style>
   .relatorio-grid {
