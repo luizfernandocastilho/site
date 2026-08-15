@@ -8,6 +8,9 @@ interface Article {
   title_en: string;
   publishedAt: Date;
   venue: string;
+  description_pt?: string;
+  description_en?: string;
+  cover?: string;
   pdf?: string;
   order?: number;
   fileId?: string;
@@ -33,36 +36,78 @@ const dateFmt = new Intl.DateTimeFormat(locale === 'pt' ? 'pt-BR' : 'en-US', {
 <section class="section" id={id} aria-labelledby={`${id}-title`}>
   <div class="container">
     <h2 id={`${id}-title`}>{t(strings, 'sectionArticles', fallback)}</h2>
-    <ul class="article-list">
+    <ul class="article-grid">
       {
-        items.map((a) => (
-          <li class="article-item">
-            <div>
-              <p class="article-title">{locale === 'pt' ? a.title_pt : a.title_en}</p>
-              <p class="article-meta">
-                {a.venue} · {dateFmt.format(a.publishedAt)}
-              </p>
-            </div>
-            {a.fileId ? (
-              <details class="item-gate">
-                <summary
-                  class="article-download item-summary"
-                  data-umami-event="download-request"
-                  data-umami-event-file={a.fileId}
-                >
-                  {t(strings, 'articleDownload', fallback)}
-                </summary>
-                <DownloadGate
-                  id={`gate-${a.fileId}`}
-                  fileId={a.fileId}
-                  locale={locale}
-                  strings={strings}
-                  fallback={fallback}
+        items.map((a) => {
+          const title = locale === 'pt' ? a.title_pt : a.title_en;
+          const description = locale === 'pt' ? a.description_pt : a.description_en;
+          const meta = `${a.venue} · ${dateFmt.format(a.publishedAt)}`;
+          const cover = a.cover
+            ? a.cover.startsWith('http')
+              ? a.cover
+              : withBase(a.cover, base)
+            : null;
+          const coverEl = (
+            <span class="article-cover">
+              {cover ? (
+                <img
+                  class="article-cover-img"
+                  src={cover}
+                  alt={title}
+                  loading="lazy"
+                  width="300"
+                  height="450"
                 />
-              </details>
-            ) : (
+              ) : (
+                <span class="article-slide">
+                  <span class="article-slide-title">{title}</span>
+                </span>
+              )}
+            </span>
+          );
+          const bodyMeta = (
+            <>
+              <span class="article-title">{title}</span>
+              <span class="article-meta">{meta}</span>
+              {description && <span class="article-desc">{description}</span>}
+            </>
+          );
+
+          // Gated (tem fileId): card não é link; o CTA abre um <details> com o formulário
+          // de solicitação (nome/e-mail). Sem runtime JS (divulgação nativa).
+          if (a.fileId) {
+            return (
+              <li class="article-card">
+                <div>
+                  {coverEl}
+                  <span class="article-body">
+                    {bodyMeta}
+                    <details class="article-gate">
+                      <summary
+                        class="article-action"
+                        data-umami-event="download-request"
+                        data-umami-event-file={a.fileId}
+                      >
+                        {t(strings, 'articleDownload', fallback)} →
+                      </summary>
+                      <DownloadGate
+                        id={`gate-${a.fileId}`}
+                        fileId={a.fileId}
+                        locale={locale}
+                        strings={strings}
+                        fallback={fallback}
+                      />
+                    </details>
+                  </span>
+                </div>
+              </li>
+            );
+          }
+
+          // Aberto (opt-out via pdf): download direto de PDF público.
+          return (
+            <li class="article-card">
               <a
-                class="article-download"
                 href={withBase(a.pdf!, base)}
                 download
                 target="_blank"
@@ -70,84 +115,122 @@ const dateFmt = new Intl.DateTimeFormat(locale === 'pt' ? 'pt-BR' : 'en-US', {
                 data-umami-event="download-pdf"
                 data-umami-event-file={a.pdf}
               >
-                {t(strings, 'articleDownload', fallback)}
+                {coverEl}
+                <span class="article-body">
+                  {bodyMeta}
+                  <span class="article-action">{t(strings, 'articleDownload', fallback)} →</span>
+                </span>
               </a>
-            )}
-          </li>
-        ))
+            </li>
+          );
+        })
       }
     </ul>
   </div>
 </section>
 
 <style>
-  /* Largura mínima e uniforme (padrão das Certificações): a lista encolhe para a
-     maior linha do conteúdo (max-content) sem estourar o .container; todos os
-     blocos herdam essa largura via width:100%. Alinhada à esquerda. Ver #98.
-     Teto de largura (~2/3 da largura natural) para o título longo não esticar a
-     caixa; o título passa a quebrar em linhas (white-space:normal). Ver #165. */
-  .article-list {
+  .article-grid {
     list-style: none;
     padding: 0;
     margin: 1.5rem 0 0;
     display: grid;
-    justify-items: start;
-    width: max-content;
-    max-width: min(100%, 34rem);
-    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.25rem;
   }
-  .article-item {
-    width: 100%;
+  .article-card a,
+  .article-card > div {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    /* wrap mantido para o gate aberto (flex-basis:100%) descer para a própria linha. */
-    flex-wrap: wrap;
-    background: var(--color-surface);
+    flex-direction: column;
+    text-decoration: none;
+    color: var(--color-text);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius);
-    padding: 1rem 1.25rem;
+    background: var(--color-surface);
+    overflow: hidden;
+    height: 100%;
+  }
+  .article-card a:hover {
+    border-color: var(--color-accent);
+  }
+  .article-cover {
+    display: block;
+    flex-shrink: 0;
+    /* Item flex: zera o min-height automático para o aspect-ratio valer (não esticar
+       até a altura intrínseca da imagem retrato). */
+    min-height: 0;
+    aspect-ratio: 3 / 4;
+  }
+  .article-cover-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  /* Painel estilo slide (sem capa): fundo verde, tipografia Oswald reversa. */
+  .article-slide {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    width: 100%;
+    height: 100%;
+    padding: 1rem 1.1rem;
+    background: var(--color-accent);
+    color: var(--color-accent-contrast);
+    border-top: 3px solid var(--color-accent-vivid, #4fb055);
+  }
+  .article-slide-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.2rem;
+    line-height: 1.15;
+  }
+  .article-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    padding: 0.85rem 1rem 1rem;
   }
   .article-title {
+    display: block;
     font-weight: 600;
-    margin: 0;
-    /* Quebra em linhas para respeitar o teto de largura da .article-list (#165). */
-    white-space: normal;
+    line-height: 1.35;
   }
   .article-meta {
-    margin: 0.15rem 0 0;
+    display: block;
+    margin-top: 0.2rem;
+    color: var(--color-muted);
+    font-size: 0.9rem;
+  }
+  .article-desc {
+    display: block;
+    margin-top: 0.4rem;
     color: var(--color-muted);
     font-size: 0.95rem;
+    line-height: 1.5;
   }
-  .article-download {
-    white-space: nowrap;
-    font-weight: 600;
-  }
-  /* Gate: CTA nativo (<summary>) que expande o formulário em largura total. */
-  .item-gate {
+  .article-action {
+    display: block;
+    margin-top: auto;
+    padding-top: 0.5rem;
     color: var(--color-accent);
+    font-weight: 600;
+    font-size: 0.95rem;
   }
-  summary.item-summary {
+  /* Card gated: empurra o bloco do CTA (<details>) para o rodapé, como nos demais. */
+  .article-gate {
+    margin-top: auto;
+  }
+  /* Gate: CTA nativo (<summary>) que expande o formulário. */
+  summary.article-action {
+    margin-top: 0;
     cursor: pointer;
     list-style: none;
-    color: var(--color-accent);
   }
-  summary.item-summary::-webkit-details-marker {
+  summary.article-action::-webkit-details-marker {
     display: none;
   }
-  summary.item-summary:focus-visible {
+  summary.article-action:focus-visible {
     outline: 3px solid var(--color-accent);
     outline-offset: 2px;
-  }
-  .item-gate[open] {
-    flex-basis: 100%;
-  }
-
-  /* Telas estreitas: volta à largura total, sem overflow (o título já quebra). */
-  @media (max-width: 640px) {
-    .article-list {
-      width: auto;
-    }
   }
 </style>

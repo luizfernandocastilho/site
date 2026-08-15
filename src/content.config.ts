@@ -52,7 +52,9 @@ const certifications = defineCollection({
   }),
 });
 
-// Artigos — metadados; o PDF vive em public/articles/.
+// Artigos — metadados; o PDF vive em public/articles/. Renderizados como decks
+// (padrão de Livros/Relatórios): `cover`/`description_*` opcionais dão o card completo;
+// sem eles, o card cai no painel-título verde + veículo·data.
 const articles = defineCollection({
   loader: glob({ pattern: '**/*.json', base: './src/content/articles' }),
   schema: z
@@ -61,6 +63,9 @@ const articles = defineCollection({
       title_en: z.string(),
       publishedAt: z.coerce.date(),
       venue: z.string(),
+      description_pt: z.string().optional(),
+      description_en: z.string().optional(),
+      cover: z.string().optional(),
       // `fileId` = gated (download com e-mail); `pdf` = aberto (public/). Ver topo.
       pdf: z.string().optional(),
       fileId: z.string().optional(),
