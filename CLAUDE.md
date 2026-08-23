@@ -163,43 +163,18 @@ An **open** download (`pdf` in `public/`) is site-only — no NAS step.
 
 The backend `seed` derives its file registry from the site content **mounted read-only** into the
 container (`../src/content`), so the NAS repo must hold the new JSON before seeding — i.e. **merge the
-PR first, then `git pull` on the NAS, then seed**. Seeding stale content silently registers only the
-old files.
+PR first, then `git pull` on the NAS, then `npm run seed`**. Seeding stale content silently registers
+only the old files. Two things to get right:
 
-NAS facts (Synology ContainerManager):
+1. The private binary in the NAS `storage/` must be named **exactly `<fileId>.pdf`** (it can be
+   copied any time, even before the merge).
+2. `seed` prints `N arquivo(s) registrado(s)` where **N = count of `fileId` items in
+   `src/content/**`** (the `.json.example` sample is not loaded), and warns for any missing
+   `<fileId>.pdf`. Then smoke-test the form on the live page and confirm the tokenized email arrives.
 
-- **Access:** `ssh admin_castilho@192.168.15.33` (LAN) — same host as Tailscale `nas-castilho`.
-- **Repo on NAS:** `~/site-api` (= `/volume1/homes/admin_castilho/site-api`); compose at
-  `~/site-api/api/docker-compose.yml`; private files in `~/site-api/api/storage/`.
-- **`docker` is not on `$PATH`** and needs root → always `sudo /usr/local/bin/docker compose …`
-  (fallback `sudo /usr/local/bin/docker-compose …` if the v2 subcommand is unavailable).
-- **`scp` needs `-O`** (the NAS SSH has no SFTP subsystem); scp lands in `$HOME`, so a relative
-  remote path like `site-api/api/storage/` works.
-
-```bash
-# a) copy the private binaries (named EXACTLY <fileId>.pdf) — from the Mac, can run before the merge:
-scp -O path/to/<fileId>.pdf … admin_castilho@192.168.15.33:site-api/api/storage/
-
-# b) after the PR is merged, on the NAS: refresh content + re-register:
-ssh admin_castilho@192.168.15.33
-cd ~/site-api && git pull                                   # brings the new JSON(s)
-cd ~/site-api/api
-sudo /usr/local/bin/docker compose exec api npm run seed    # idempotent; derives from content
-```
-
-Verify: `seed` prints `N arquivo(s) registrado(s)` where **N = count of `fileId` items in
-`src/content/**`** (the `.json.example` sample is not loaded), and warns for any missing
-`<fileId>.pdf`. Confirm the storage and health:
-
-```bash
-sudo /usr/local/bin/docker compose exec api ls /app/storage | grep -c <fileId-prefix>
-curl -s localhost:3000/health         # {"status":"ok"}
-```
-
-Then smoke-test the form on the live page and confirm the tokenized email arrives.
-
-> The `git pull` must fast-forward `main`; if it comes up empty after a merge, check the NAS branch
-> (`git -C ~/site-api rev-parse --abbrev-ref HEAD`).
+> The concrete connection details — SSH host/user, NAS repo & storage paths, the `sudo`/`docker`
+> invocation, the `scp -O` quirk, and copy-paste commands — live in **`CLAUDE.local.md`** (gitignored,
+> kept out of this public repo). Read it before doing a NAS deploy.
 
 ## Spec-Driven Development
 
