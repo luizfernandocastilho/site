@@ -10,6 +10,9 @@ node_modules/
 .env.*
 !.env.example
 
+# Notas operacionais privadas (detalhes de conexão do NAS etc.) — fora do repo público
+CLAUDE.local.md
+
 # Logs / temp
 *.log
 npm-debug.log*

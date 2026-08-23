@@ -84,7 +84,8 @@ rel="noopener noreferrer"`). Contact is links only (email/social) — no contact
   link. There is no `gated` flag — the presence of `fileId` is what gates. Convention: the
   private binary on the NAS is named **`<fileId>.pdf`**, and `api/src/seed.ts` derives the file
   registry from `src/content/**` (no hardcoded list). Adding a gated download = create the JSON
-  with `fileId` + drop `<fileId>.pdf` in the NAS `storage/` + `npm run seed` (see `api/README.md`).
+  with `fileId` + drop `<fileId>.pdf` in the NAS `storage/` + `npm run seed` — full step-by-step
+  (site + NAS) in [Publishing new downloads (playbook)](#publishing-new-downloads-playbook).
 - Env vars (see `.env.example`): `SITE_URL`, `BASE_PATH` (read by `astro.config.mjs`);
   `PUBLIC_API_URL` (build-time, embedded via `import.meta.env.PUBLIC_API_URL`) is the download-gate
   API base used as the `action` of the request form (`DownloadGate.astro`);
@@ -127,6 +128,53 @@ file. Each request is logged in **Postgres** (the lead list). The static site st
   files kept **outside** the site (served only via token); secrets (`APP_SECRET`, `ADMIN_TOKEN`,
   Postgres, SMTP) come from `.env`, never versioned. Empty `SMTP_HOST` = dev mode (link only logged).
   See `api/README.md` for the NAS deploy notes and email-deliverability (SPF/DKIM/DMARC) caveats.
+
+## Publishing new downloads (playbook)
+
+End-to-end recipe for adding a new file to a section (articles, keynotes, livros, relatorios). A
+**gated** download (`fileId`) has two halves: the **static site** (JSON + cover, versioned, published
+by the GitHub Pages deploy) and the **NAS backend** (the private `<fileId>.pdf` + a `seed` run). Both
+must be done — the site shows the card, but the download only works once the backend registers it.
+An **open** download (`pdf` in `public/`) is site-only — no NAS step.
+
+### 1. Site side (in the repo)
+
+1. **Pick the `fileId`** — a short unique slug (e.g. `pendulo-ba`). It is the public URL slug and the
+   storage filename; it is **independent of the source PDF's filename**.
+2. **Create the JSON** in `src/content/<collection>/<fileId>.json` with `fileId` (gated) — plus
+   bilingual `title`/`title_*` and `description_*`, a `cover`, and an `order`. For a whole series,
+   keep `order` contiguous and alphabetical (renumber siblings in the same PR if needed — cheap while
+   the PR is open).
+3. **Cover** (decks: relatorios/livros/articles): `.webp` at **849×1200**, dropped in
+   `public/relatorios/<fileId>.webp`. The house style renders it **from the PDF's first page** (the
+   PDF cover already carries the site branding):
+   ```bash
+   pdftoppm -f 1 -l 1 -r 200 -png "REPORT.pdf" /tmp/cov          # → /tmp/cov-1.png
+   magick /tmp/cov-1.png -resize 849x1200^ -gravity center -extent 849x1200 /tmp/cov.png
+   cwebp -q 82 /tmp/cov.png -o public/relatorios/<fileId>.webp
+   ```
+   Gotcha: `pdftoppm` pads the page number to the page count's width — a 10+‑page PDF emits
+   `cov-01.png`, not `cov-1.png`. Adjust the `magick` input accordingly.
+4. **Gate:** `npm run check && npm test && npm run lint`, then **open an issue → branch → PR** (repo
+   convention; `Closes #N`). Merging to `main` triggers `deploy.yml` (GitHub Pages) — the cards go
+   live in ~1 min.
+
+### 2. NAS side (gated only — makes the download actually work)
+
+The backend `seed` derives its file registry from the site content **mounted read-only** into the
+container (`../src/content`), so the NAS repo must hold the new JSON before seeding — i.e. **merge the
+PR first, then `git pull` on the NAS, then `npm run seed`**. Seeding stale content silently registers
+only the old files. Two things to get right:
+
+1. The private binary in the NAS `storage/` must be named **exactly `<fileId>.pdf`** (it can be
+   copied any time, even before the merge).
+2. `seed` prints `N arquivo(s) registrado(s)` where **N = count of `fileId` items in
+   `src/content/**`** (the `.json.example` sample is not loaded), and warns for any missing
+   `<fileId>.pdf`. Then smoke-test the form on the live page and confirm the tokenized email arrives.
+
+> The concrete connection details — SSH host/user, NAS repo & storage paths, the `sudo`/`docker`
+> invocation, the `scp -O` quirk, and copy-paste commands — live in **`CLAUDE.local.md`** (gitignored,
+> kept out of this public repo). Read it before doing a NAS deploy.
 
 ## Spec-Driven Development
 
