@@ -43,14 +43,13 @@ const atuacaoAreas = await getAtuacao();
                   label: t(strings, c.labelKey, fallback),
                 }));
 
+          // Sem data-umami-event nos links de navegação: navegação na mesma aba não
+          // pode depender do beacon do Umami (o tracker faz preventDefault +
+          // location.href só após o POST /api/send resolver — se o analytics travar,
+          // o link não navega). As seções seguem medidas por pageview. Ver #224.
           if (subItems.length === 0) {
             return (
-              <a
-                href={sectionUrl}
-                aria-current={isCurrent}
-                data-umami-event="nav"
-                data-umami-event-key={item.key}
-              >
+              <a href={sectionUrl} aria-current={isCurrent}>
                 {sectionLabel}
               </a>
             );
@@ -62,12 +61,8 @@ const atuacaoAreas = await getAtuacao();
               {/* Toggle só do mobile (checkbox-hack, sem JS); escondido no desktop. */}
               <input type="checkbox" id={toggleId} class="nav-subtoggle" />
               <span class="nav-item-head">
-                <a
-                  href={sectionUrl}
-                  aria-current={isCurrent}
-                  data-umami-event="nav"
-                  data-umami-event-key={item.key}
-                >
+                {/* Sem data-umami-event: ver nota acima (#224). */}
+                <a href={sectionUrl} aria-current={isCurrent}>
                   {sectionLabel}
                 </a>
                 <label
