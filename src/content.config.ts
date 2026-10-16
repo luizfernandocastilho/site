@@ -117,6 +117,9 @@ const atuacao = defineCollection({
     // aqui, se usado, é sempre aberto. Sem `fileId` (sem suporte a gate neste componente).
     pdf: z.string().optional(),
     cover: z.string().optional(),
+    // Quando a própria imagem de `cover` já traz o título embutido, oculta o título
+    // sobreposto do card (evita duplicação); o ícone e a imagem seguem visíveis.
+    coverHasTitle: z.boolean().optional(),
     order: z.number().optional(),
     // Ícone temático do card (renderizado por AtuacaoIcon.astro).
     icon: z

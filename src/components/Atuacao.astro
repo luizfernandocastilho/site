@@ -14,6 +14,7 @@ interface AtuacaoItem {
   url?: string;
   pdf?: string;
   cover?: string;
+  coverHasTitle?: boolean;
   order?: number;
   icon?: AtuacaoIconName;
 }
@@ -46,16 +47,24 @@ const label = t(strings, 'sectionAtuacao', fallback);
               ? a.cover
               : withBase(a.cover, base)
             : null;
+          // Imagem que já traz o título embutido: oculta o título sobreposto do card.
+          const coverHasTitle = Boolean(cover && a.coverHasTitle);
           return (
             <li class="atuacao-card">
               <a href={href}>
                 <span class="atuacao-cover">
-                  <span class:list={['atuacao-slide', cover && 'has-img']}>
+                  <span
+                    class:list={[
+                      'atuacao-slide',
+                      cover && 'has-img',
+                      coverHasTitle && 'title-in-img',
+                    ]}
+                  >
                     {cover && (
                       <img
                         class="atuacao-slide-img"
                         src={cover}
-                        alt=""
+                        alt={coverHasTitle ? title : ''}
                         loading="lazy"
                         width="480"
                         height="270"
@@ -66,7 +75,7 @@ const label = t(strings, 'sectionAtuacao', fallback);
                         <AtuacaoIcon name={a.icon} />
                       </span>
                     )}
-                    <span class="atuacao-slide-title">{title}</span>
+                    {!coverHasTitle && <span class="atuacao-slide-title">{title}</span>}
                   </span>
                 </span>
                 <span class="atuacao-body">
@@ -145,6 +154,16 @@ const label = t(strings, 'sectionAtuacao', fallback);
       rgba(0, 0, 0, 0.1) 32%,
       rgba(0, 0, 0, 0.28) 62%,
       rgba(0, 0, 0, 0.72) 100%
+    );
+  }
+  /* Imagem com título embutido: sem título sobreposto embaixo, então só um leve
+     escurecimento no topo (para o ícone), sem o scrim pesado de rodapé. */
+  .atuacao-slide.has-img.title-in-img::before {
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.32) 0%,
+      rgba(0, 0, 0, 0.05) 24%,
+      rgba(0, 0, 0, 0) 55%
     );
   }
   /* Ícone no topo do slide (título fica no rodapé via justify-content: flex-end). */

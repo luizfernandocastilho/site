@@ -24,6 +24,7 @@
     "Continuous monitoring and leadership reporting"
   ],
   "cover": "atuacao/gestao-riscos.webp",
+  "coverHasTitle": true,
   "order": 4,
   "icon": "risk"
 }
