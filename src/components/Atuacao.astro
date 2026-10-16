@@ -50,21 +50,26 @@ const label = t(strings, 'sectionAtuacao', fallback);
             <li class="atuacao-card">
               <a href={href}>
                 <span class="atuacao-cover">
-                  {cover ? (
-                    <img src={cover} alt={title} loading="lazy" width="480" height="270" />
-                  ) : (
-                    <span class="atuacao-slide">
-                      {a.icon && (
-                        <span class="atuacao-slide-icon">
-                          <AtuacaoIcon name={a.icon} />
-                        </span>
-                      )}
-                      <span class="atuacao-slide-title">{title}</span>
-                    </span>
-                  )}
+                  <span class:list={['atuacao-slide', cover && 'has-img']}>
+                    {cover && (
+                      <img
+                        class="atuacao-slide-img"
+                        src={cover}
+                        alt=""
+                        loading="lazy"
+                        width="480"
+                        height="270"
+                      />
+                    )}
+                    {a.icon && (
+                      <span class="atuacao-slide-icon">
+                        <AtuacaoIcon name={a.icon} />
+                      </span>
+                    )}
+                    <span class="atuacao-slide-title">{title}</span>
+                  </span>
                 </span>
                 <span class="atuacao-body">
-                  {cover && <span class="atuacao-title">{title}</span>}
                   {description && <span class="atuacao-desc">{description}</span>}
                   <span class="atuacao-action">{t(strings, 'atuacaoView', fallback)} →</span>
                 </span>
@@ -103,13 +108,20 @@ const label = t(strings, 'sectionAtuacao', fallback);
     display: block;
     aspect-ratio: 16 / 9;
   }
-  .atuacao-cover img {
+  /* Capa (quando há imagem): fica ATRÁS do conteúdo do slide, sob um scrim. */
+  .atuacao-slide-img {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    z-index: 0;
   }
-  /* Painel estilo slide (quando não há capa): fundo verde, tipografia Oswald reversa. */
+  /* Painel estilo slide: fundo verde + tipografia Oswald reversa; com capa, a imagem
+     entra atrás e o ícone/título seguem visíveis sobre o scrim. */
   .atuacao-slide {
+    position: relative;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -121,26 +133,45 @@ const label = t(strings, 'sectionAtuacao', fallback);
     color: var(--color-accent-contrast);
     border-top: 3px solid var(--color-accent-vivid, #4fb055);
   }
+  /* Scrim de legibilidade: reforça topo (ícone) e rodapé (título) sobre a imagem. */
+  .atuacao-slide.has-img::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.5) 0%,
+      rgba(0, 0, 0, 0.1) 32%,
+      rgba(0, 0, 0, 0.28) 62%,
+      rgba(0, 0, 0, 0.72) 100%
+    );
+  }
   /* Ícone no topo do slide (título fica no rodapé via justify-content: flex-end). */
   .atuacao-slide-icon {
+    position: relative;
+    z-index: 2;
     display: inline-flex;
     margin-bottom: auto;
     color: var(--color-accent-contrast);
   }
   .atuacao-slide-title {
+    position: relative;
+    z-index: 2;
     font-family: var(--font-display);
     font-weight: 600;
     font-size: 1.25rem;
     line-height: 1.15;
   }
+  .atuacao-slide.has-img .atuacao-slide-title {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
+  }
+  .atuacao-slide.has-img .atuacao-slide-icon {
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+  }
   .atuacao-body {
     display: block;
     padding: 0.85rem 1rem 1rem;
-  }
-  .atuacao-title {
-    display: block;
-    font-weight: 600;
-    line-height: 1.35;
   }
   .atuacao-desc {
     display: block;
