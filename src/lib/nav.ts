@@ -33,7 +33,22 @@ export interface NavChild {
 }
 
 export const NAV_CHILDREN: Record<string, NavChild[]> = {
-  resources: [],
+  resources: [
+    {
+      key: 'infograficos',
+      labelKey: 'navRecursoInfograficos',
+      slugs: { pt: 'infograficos', en: 'infographics' },
+      pdf: 'recursos/infograficos.pdf',
+      icon: 'infografico',
+    },
+    {
+      key: 'podcasts',
+      labelKey: 'navRecursoPodcasts',
+      slugs: { pt: 'podcasts', en: 'podcasts' },
+      pdf: 'recursos/podcasts.pdf',
+      icon: 'podcast',
+    },
+  ],
   publications: [
     {
       key: 'artigos',
