@@ -40,6 +40,11 @@ const pageTitle = `${title} · ${profile?.name ?? 'Site Pessoal'}`;
 
 const base = import.meta.env.BASE_URL;
 const deckHref = area.pdf ? withBase(area.pdf, base) : (area.url ?? null);
+const coverSrc = area.cover
+  ? area.cover.startsWith('http')
+    ? area.cover
+    : withBase(area.cover, base)
+  : null;
 const gridUrl = navUrl(
   NAV_ITEMS.find((i) => i.key === 'atuacao')!,
   locale,
@@ -60,6 +65,19 @@ const gridUrl = navUrl(
       <p class="section-label">{sectionLabel}</p>
       <h1>{title}</h1>
       {description && <p class="area-lead">{description}</p>}
+
+      {
+        coverSrc && (
+          <img
+            class="area-cover"
+            src={coverSrc}
+            alt={locale === 'pt' ? `Ilustração — ${title}` : `Illustration — ${title}`}
+            width="1408"
+            height="768"
+            loading="lazy"
+          />
+        )
+      }
 
       {body?.map((paragraph) => <p class="area-body">{paragraph}</p>)}
 
@@ -102,6 +120,15 @@ const gridUrl = navUrl(
     color: var(--color-muted);
     font-size: 1.05rem;
     line-height: 1.6;
+  }
+  .area-cover {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-top: 1.5rem;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border: 1px solid var(--color-border);
   }
   .area-body {
     margin-top: 1rem;
