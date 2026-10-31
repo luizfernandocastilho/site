@@ -188,6 +188,12 @@ const label = t(strings, 'sectionAtuacao', fallback);
   .atuacao-slide.has-img .atuacao-slide-icon {
     filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
   }
+  /* Sobre a foto o scrim é sempre escuro, então título/ícone vão em branco
+     (independe do tema; o acento-contraste do painel verde seguiria escuro). */
+  .atuacao-slide.has-img .atuacao-slide-title,
+  .atuacao-slide.has-img .atuacao-slide-icon {
+    color: #fff;
+  }
   .atuacao-body {
     display: block;
     padding: 0.85rem 1rem 1rem;

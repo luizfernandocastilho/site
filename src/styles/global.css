@@ -22,16 +22,16 @@
   src: url('/fonts/source-sans-3-italic-latin.woff2') format('woff2');
 }
 
-/* ---------- Design tokens (design-system: verde editorial, papel branco) ---------- */
+/* ---------- Design tokens (TESTE: tema escuro índigo + verde da marca) ---------- */
 :root {
-  --color-bg: #ffffff; /* papel branco */
-  --color-surface: #f6f7f4; /* off-white para cards/superfícies */
-  --color-text: #1c221d; /* ink — contraste 16:1 sobre branco */
-  --color-muted: #55605a; /* ink-500 — 6.5:1 sobre branco */
-  --color-accent: #2f7a3a; /* green-700 — verde funcional, 5.3:1 (links/botões/réguas) */
-  --color-accent-contrast: #ffffff;
-  --color-accent-vivid: #4fb055; /* green-500 — verde vivo da marca, só em blocos decorativos */
-  --color-border: #dde1da; /* hairline (line-200) */
+  --color-bg: #1c1347; /* índigo profundo (fundo) */
+  --color-surface: #27205a; /* índigo mais claro para cards/superfícies */
+  --color-text: #ffffff; /* branco — ~17:1 sobre o índigo */
+  --color-muted: #b9b2da; /* lavanda-cinza para texto secundário — ~6.9:1 */
+  --color-accent: #ffc000; /* dourado — links/botões/réguas/rótulos, ~10:1 sobre o fundo */
+  --color-accent-contrast: #160f33; /* índigo quase-preto — texto SOBRE os blocos dourados, ~10:1 */
+  --color-accent-vivid: #ffce3a; /* dourado mais claro, só em réguas/blocos decorativos */
+  --color-border: #39316e; /* hairline índigo (visível sobre o fundo) */
 
   --font-display: 'Oswald', 'Barlow Semi Condensed', system-ui, sans-serif;
   --font-body: 'Source Sans 3', 'Source Sans Pro', system-ui, sans-serif;

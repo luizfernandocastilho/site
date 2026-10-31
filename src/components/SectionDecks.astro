@@ -157,6 +157,11 @@ const base = import.meta.env.BASE_URL;
     font-size: 1.25rem;
     line-height: 1.15;
   }
+  /* Sobre a foto o scrim é sempre escuro: título/ícone em branco (independe do tema). */
+  .deck-slide.has-cover .deck-slide-title,
+  .deck-slide.has-cover .deck-slide-icon {
+    color: #fff;
+  }
   .deck-slide.has-cover .deck-slide-title {
     text-shadow: 0 1px 3px rgb(0 0 0 / 55%);
   }
