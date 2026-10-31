@@ -138,11 +138,10 @@ const label = t(strings, 'sectionAtuacao', fallback);
     width: 100%;
     height: 100%;
     padding: 1rem 1.1rem;
-    /* Cor dos decks de Atuação (específica da seção; não usa o acento global). */
-    background: #fb7b62;
-    color: var(--color-accent-contrast);
-    /* Régua do topo de cada deck (específica da seção). */
-    border-top: 3px solid #c9c1b1;
+    /* Visual idêntico aos decks de Publicações: terracota + texto/ícone claros. */
+    background: #a35139;
+    color: #f3f4f6;
+    border-top: 3px solid var(--color-accent-vivid, #4fb055);
   }
   /* Scrim de legibilidade: reforça topo (ícone) e rodapé (título) sobre a imagem. */
   .atuacao-slide.has-img::before {
@@ -174,7 +173,7 @@ const label = t(strings, 'sectionAtuacao', fallback);
     z-index: 2;
     display: inline-flex;
     margin-bottom: auto;
-    color: var(--color-accent-contrast);
+    color: #f3f4f6;
   }
   .atuacao-slide-title {
     position: relative;

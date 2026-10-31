@@ -99,6 +99,12 @@ h2 {
   border-bottom: 2px solid var(--color-accent);
 }
 
+/* Título no topo de cada seção: mesmo tamanho e cor do nome no Hero (#hero-name). */
+h2[id$='-title'] {
+  font-size: clamp(2.4rem, 6vw, 3.6rem);
+  color: var(--color-accent);
+}
+
 /* Rótulo de seção uppercase com tracking largo (utilitário do design-system). */
 .section-label {
   display: inline-block;
