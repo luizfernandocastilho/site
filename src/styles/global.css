@@ -26,12 +26,12 @@
 :root {
   --color-bg: #1c1347; /* índigo profundo (fundo) */
   --color-surface: #27205a; /* índigo mais claro para cards/superfícies */
-  --color-text: #ffffff; /* branco — ~17:1 sobre o índigo */
+  --color-text: #f3f4f6; /* quase-branco — alto contraste sobre o índigo */
   --color-muted: #b9b2da; /* lavanda-cinza para texto secundário — ~6.9:1 */
-  --color-accent: #ffc000; /* dourado — links/botões/réguas/rótulos, ~10:1 sobre o fundo */
-  --color-accent-contrast: #160f33; /* índigo quase-preto — texto SOBRE os blocos dourados, ~10:1 */
-  --color-accent-vivid: #ffce3a; /* dourado mais claro, só em réguas/blocos decorativos */
-  --color-border: #39316e; /* hairline índigo (visível sobre o fundo) */
+  --color-accent: #ffb162; /* laranja — decks/links/réguas/rótulos, ~9:1 sobre o fundo */
+  --color-accent-contrast: #160f33; /* índigo quase-preto — texto SOBRE os blocos de acento */
+  --color-accent-vivid: #ffcb93; /* laranja mais claro, só em réguas/blocos decorativos */
+  --color-border: #2d226a; /* linhas/hairlines (índigo-violeta) */
 
   --font-display: 'Oswald', 'Barlow Semi Condensed', system-ui, sans-serif;
   --font-body: 'Source Sans 3', 'Source Sans Pro', system-ui, sans-serif;
