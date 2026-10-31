@@ -138,9 +138,11 @@ const label = t(strings, 'sectionAtuacao', fallback);
     width: 100%;
     height: 100%;
     padding: 1rem 1.1rem;
-    background: var(--color-accent);
+    /* Cor dos decks de Atuação (específica da seção; não usa o acento global). */
+    background: #eee9df;
     color: var(--color-accent-contrast);
-    border-top: 3px solid var(--color-accent-vivid, #4fb055);
+    /* Régua do topo de cada deck (específica da seção). */
+    border-top: 3px solid #c9c1b1;
   }
   /* Scrim de legibilidade: reforça topo (ícone) e rodapé (título) sobre a imagem. */
   .atuacao-slide.has-img::before {
@@ -192,7 +194,7 @@ const label = t(strings, 'sectionAtuacao', fallback);
      (independe do tema; o acento-contraste do painel verde seguiria escuro). */
   .atuacao-slide.has-img .atuacao-slide-title,
   .atuacao-slide.has-img .atuacao-slide-icon {
-    color: #fff;
+    color: #f3f4f6;
   }
   .atuacao-body {
     display: block;
