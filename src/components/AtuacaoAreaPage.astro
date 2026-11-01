@@ -18,6 +18,8 @@ interface Area {
   highlights_en?: string[];
   url?: string;
   pdf?: string;
+  pdf_pt?: string;
+  pdf_en?: string;
   cover?: string;
   order?: number;
 }
@@ -39,7 +41,10 @@ const sectionLabel = t(strings, 'sectionAtuacao', fallback);
 const pageTitle = `${title} · ${profile?.name ?? 'Site Pessoal'}`;
 
 const base = import.meta.env.BASE_URL;
-const deckHref = area.pdf ? withBase(area.pdf, base) : (area.url ?? null);
+// Documento oficial por idioma (download aberto); cai em `pdf` se o locale não tiver.
+const pdfFile = (locale === 'pt' ? area.pdf_pt : area.pdf_en) ?? area.pdf ?? null;
+const pdfHref = pdfFile ? withBase(pdfFile, base) : null;
+const externalHref = area.url ?? null;
 const coverSrc = area.cover
   ? area.cover.startsWith('http')
     ? area.cover
@@ -95,8 +100,21 @@ const gridUrl = navUrl(
       }
 
       {
-        deckHref ? (
-          <a class="area-deck" href={deckHref} target="_blank" rel="noopener noreferrer">
+        pdfHref ? (
+          <a
+            class="area-download"
+            href={pdfHref}
+            download
+            target="_blank"
+            rel="noopener noreferrer"
+            data-umami-event="download-pdf"
+            data-umami-event-file={pdfFile}
+          >
+            {t(strings, 'atuacaoDownload', fallback)}
+            <span aria-hidden="true"> ↓</span>
+          </a>
+        ) : externalHref ? (
+          <a class="area-deck" href={externalHref} target="_blank" rel="noopener noreferrer">
             {t(strings, 'atuacaoView', fallback)} →
           </a>
         ) : (
@@ -156,6 +174,21 @@ const gridUrl = navUrl(
     margin-top: 1.5rem;
     color: var(--color-accent);
     font-weight: 600;
+  }
+  /* Documento oficial — botão sólido destacado (CTA) para baixar e circular. */
+  .area-download {
+    display: inline-block;
+    margin-top: 2rem;
+    padding: 0.75rem 1.4rem;
+    background: var(--color-accent);
+    color: var(--color-accent-contrast);
+    border-radius: var(--radius);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+  .area-download:hover {
+    filter: brightness(1.08);
   }
   .area-soon {
     margin-top: 1.5rem;

@@ -115,7 +115,11 @@ const atuacao = defineCollection({
     url: z.string().url().optional(),
     // Áreas de Atuação não têm download gated (cards descritivos/link externo); `pdf`
     // aqui, se usado, é sempre aberto. Sem `fileId` (sem suporte a gate neste componente).
+    // `pdf_pt`/`pdf_en` servem um documento oficial por idioma (download aberto em
+    // public/); a página da área escolhe o do locale corrente e cai em `pdf` se faltar.
     pdf: z.string().optional(),
+    pdf_pt: z.string().optional(),
+    pdf_en: z.string().optional(),
     cover: z.string().optional(),
     // Quando a própria imagem de `cover` já traz o título embutido, oculta o título
     // sobreposto do card (evita duplicação); o ícone e a imagem seguem visíveis.
