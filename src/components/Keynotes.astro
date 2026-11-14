@@ -115,7 +115,7 @@ const dateFmt = new Intl.DateTimeFormat(locale === 'pt' ? 'pt-BR' : 'en-US', {
                   {cover && <span class="keynote-title">{title}</span>}
                   {dateEl}
                   <span class="keynote-action">
-                    {t(strings, k.pdf ? 'keynoteDownload' : 'keynoteView', fallback)} →
+                    {t(strings, k.pdf ? 'keynoteDownload' : 'keynoteLink', fallback)} →
                   </span>
                 </span>
               </a>
