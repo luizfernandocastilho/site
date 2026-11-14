@@ -76,25 +76,22 @@ const articles = defineCollection({
     }),
 });
 
-// Keynotes — apresentações/decks. Aponta para `url` (externo) ou `pdf` (public/).
-// `cover` opcional (imagem da capa do deck). Um item por arquivo.
+// Keynotes — apresentações/decks. Aponta para `url` (externo) ou `pdf` (public/),
+// ou é gated por `fileId`. Todos opcionais: um keynote pode ser só vitrine (capa +
+// título), sem arquivo para baixar. `cover` opcional. Um item por arquivo.
 const keynotes = defineCollection({
   loader: glob({ pattern: '**/*.json', base: './src/content/keynotes' }),
-  schema: z
-    .object({
-      title_pt: z.string(),
-      title_en: z.string(),
-      url: z.string().url().optional(),
-      // `fileId` = gated (download com e-mail); `pdf` = aberto (public/). Ver topo.
-      pdf: z.string().optional(),
-      fileId: z.string().optional(),
-      cover: z.string().optional(),
-      date: z.coerce.date().optional(),
-      order: z.number().optional(),
-    })
-    .refine((d) => !!d.url || !!d.pdf || !!d.fileId, {
-      message: 'Informe url (externo), fileId (download com e-mail) ou pdf (download aberto)',
-    }),
+  schema: z.object({
+    title_pt: z.string(),
+    title_en: z.string(),
+    url: z.string().url().optional(),
+    // `fileId` = gated (download com e-mail); `pdf` = aberto (public/). Ver topo.
+    pdf: z.string().optional(),
+    fileId: z.string().optional(),
+    cover: z.string().optional(),
+    date: z.coerce.date().optional(),
+    order: z.number().optional(),
+  }),
 });
 
 // Atuação — áreas de atuação profissional em cards (padrão Keynotes). Cada card tem

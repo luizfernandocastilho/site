@@ -88,6 +88,21 @@ const dateFmt = new Intl.DateTimeFormat(locale === 'pt' ? 'pt-BR' : 'en-US', {
             );
           }
 
+          // Item sem download/link: card só vitrine (capa + título + data), sem CTA.
+          if (!k.url && !k.pdf) {
+            return (
+              <li class="keynote-card">
+                <div class="keynote-cardinner">
+                  {coverEl}
+                  <span class="keynote-body">
+                    {cover && <span class="keynote-title">{title}</span>}
+                    {dateEl}
+                  </span>
+                </div>
+              </li>
+            );
+          }
+
           const href = k.pdf ? withBase(k.pdf, base) : k.url!;
           const linkEvent = k.pdf
             ? { 'data-umami-event': 'download-pdf', 'data-umami-event-file': k.pdf }
